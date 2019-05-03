@@ -13,6 +13,7 @@ import com.chuan.spring.formework.beans.support.GPDefaultListableBeanFactory;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -88,6 +89,7 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
         GPBeanDefinition beanDefinition = this.beanDefinitionMap.get(beanName);
         try {
             //生成通知事件
+            //工厂模式 + 策略模式
             GPBeanPostProcessor beanPostProcessor = new GPBeanPostProcessor();
             //1、初始化
             Object instance = instantiateBean(beanDefinition);
@@ -178,6 +180,17 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
 
         //4、把BeanWrapper存在IOC容器中
         return instance;
+    }
 
+    public String[] getBeanDefinitionNames(){
+        return this.beanDefinitionMap.keySet().toArray(new String[this.beanDefinitionMap.size()]);
+    }
+
+    public int getBeanDefinitionCount(){
+        return this.beanDefinitionMap.size();
+    }
+
+    public Properties getConfig(){
+        return this.reader.getContextConfig();
     }
 }

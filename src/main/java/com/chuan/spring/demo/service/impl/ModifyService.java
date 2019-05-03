@@ -15,8 +15,10 @@ public class ModifyService implements IModifyService {
 	/**
 	 * 增加
 	 */
-	public String add(String name,String addr) {
-		return "modifyService add,name=" + name + ",addr=" + addr;
+	public String add(String name,String addr) throws Exception{
+
+		throw new Exception("这是我自己创建的一个异常！！！");
+//		return "modifyService add,name=" + name + ",addr=" + addr;
 	}
 
 	/**
