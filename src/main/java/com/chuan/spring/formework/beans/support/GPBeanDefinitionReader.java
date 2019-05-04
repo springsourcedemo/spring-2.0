@@ -121,7 +121,5 @@ public class GPBeanDefinitionReader {
         //在Java中，对char做算学运算，实际上就是对ASCII码做算学运算
         chars[0] += 32;
         return String.valueOf(chars);
-
     }
-
 }

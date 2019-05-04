@@ -1,0 +1,15 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+src/main/java/com/chuan/spring/formework/aop/
+target/classes/com/chuan/spring/demo/action/PageAction.class
+target/classes/com/chuan/spring/formework/webmvc/
+target/classes/layouts/
+target/generated-sources/
+target/work/
