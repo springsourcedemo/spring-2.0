@@ -3,6 +3,11 @@ package com.chuan.spring.formework.context;
 import com.chuan.spring.formework.annotation.GPAutowired;
 import com.chuan.spring.formework.annotation.GPController;
 import com.chuan.spring.formework.annotation.GPService;
+import com.chuan.spring.formework.aop.GPAopConfig;
+import com.chuan.spring.formework.aop.GPAopProxy;
+import com.chuan.spring.formework.aop.GPCglibAopProxy;
+import com.chuan.spring.formework.aop.GPJdkDynamicAopProxy;
+import com.chuan.spring.formework.aop.support.GPAdvisedSupport;
 import com.chuan.spring.formework.core.GPBeanFactory;
 import com.chuan.spring.formework.beans.GPBeanWrapper;
 import com.chuan.spring.formework.beans.config.GPBeanDefinition;
@@ -15,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 /**
  * ioc/di/aop
@@ -168,7 +174,16 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
                 //假设默认就是单例,细节暂时不考虑
                 Class<?> clazz = Class.forName(className);
                 instance = clazz.newInstance();
-                this.singletonBeanCacheMap.put(className,instance);
+
+                //AOP
+                GPAdvisedSupport config = instantionAopConfig(gpBeanDefinition);
+                config.setTargetClass(clazz);
+                config.setTarget(instance);
+                if(config.pointCutMatch()){
+
+                    instance = createProxy(config).getProxy();
+                }
+//                this.singletonBeanCacheMap.put(className,instance);
                 this.singletonBeanCacheMap.put(gpBeanDefinition.getFactoryBeanName(),instance);
             }
         }catch (Exception e){
@@ -180,6 +195,25 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
 
         //4、把BeanWrapper存在IOC容器中
         return instance;
+    }
+
+    private GPAopProxy createProxy(GPAdvisedSupport config) {
+        Class targetClass = config.getTargetClass();
+        if(targetClass.getInterfaces().length > 0){
+            return new GPJdkDynamicAopProxy(config);
+        }
+        return new GPCglibAopProxy(config);
+    }
+
+    private GPAdvisedSupport instantionAopConfig(GPBeanDefinition beanDefinition) {
+        GPAopConfig config = new GPAopConfig();
+        config.setPointCut(this.reader.getContextConfig().getProperty("pointCut"));
+        config.setAspectClass(this.reader.getContextConfig().getProperty("aspectClass"));
+        config.setAspectBefore(this.reader.getContextConfig().getProperty("aspectBefore"));
+        config.setAspectAfter(this.reader.getContextConfig().getProperty("aspectAfter"));
+        config.setAspectAfterThrow(this.reader.getContextConfig().getProperty("aspectAfterThrow"));
+        config.setAspectAfterThrowingName(this.reader.getContextConfig().getProperty("aspectAfterThrowingName"));
+        return new GPAdvisedSupport(config);
     }
 
     public String[] getBeanDefinitionNames(){
