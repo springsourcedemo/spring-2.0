@@ -18,6 +18,8 @@ public class GPMethodInvocation implements GPJoinPoint {
     private  Class<?> targetClass;
     private Map<String, Object> userAttributes;
     protected  List<?> interceptorsAndDynamicMethodMatchers;
+
+    //定义一个索引，从-1开始，记录当前拦截器的位置
     private int currentInterceptorIndex = -1;
 
     public GPMethodInvocation(
@@ -33,14 +35,15 @@ public class GPMethodInvocation implements GPJoinPoint {
 
     public Object proceed() throws Throwable{
         if(this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1){
+            //自己本身的方法
             return this.method.invoke(this.target,this.arguments);
         }
-
         Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
         if(interceptorOrInterceptionAdvice instanceof GPMethodInterceptor){
             GPMethodInterceptor mi =  (GPMethodInterceptor)interceptorOrInterceptionAdvice;
             return mi.invoke(this);
         }else {
+            //调用下一个Interceptor
            return proceed();
         }
     }

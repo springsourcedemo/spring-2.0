@@ -180,7 +180,6 @@ public class GPApplicationContext extends GPDefaultListableBeanFactory implement
                 config.setTargetClass(clazz);
                 config.setTarget(instance);
                 if(config.pointCutMatch()){
-
                     instance = createProxy(config).getProxy();
                 }
 //                this.singletonBeanCacheMap.put(className,instance);
